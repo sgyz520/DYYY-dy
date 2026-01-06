@@ -31,7 +31,6 @@ jobs:
         run: |
           rm -rf theos
           git clone --depth 1 --branch master https://github.com/roothide/theos.git theos
-          git clone --depth 1 --branch master https://github.com/theos/sdks.git theos/sdks
 
       - name: Setup GNU Make
         run: echo "$(brew --prefix)/opt/make/libexec/gnubin" >> $GITHUB_PATH
