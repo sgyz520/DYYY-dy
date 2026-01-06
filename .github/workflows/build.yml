@@ -18,16 +18,23 @@ jobs:
           path: theos
           key: theos-${{ runner.os }}-${{ github.sha }}
 
+      - name: Setup Procursus
+        run: |
+          brew tap ProcursusTeam/brew
+          brew install procursus/package-management/dpkg
+
       - name: Setup Theos
         if: steps.cache-theos.outputs.cache-hit != 'true'
         run: |
           rm -rf theos
-          mkdir -p theos
-          git clone --depth 1 --branch master https://github.com/theos/theos.git temp-theos
-          mv temp-theos/* temp-theos/.* theos/ 2>/dev/null || true
-          rm -rf temp-theos
+          git clone --depth 1 --branch master https://github.com/theos/theos.git theos
           rm -rf theos/sdks
           git clone --depth 1 --branch master https://github.com/theos/sdks.git theos/sdks
+          # 确保 dm.pl 存在
+          if [ ! -f theos/bin/dm.pl ]; then
+            curl -L -o theos/bin/dm.pl https://raw.githubusercontent.com/ProcursusTeam/Procursus/master/core/theos/bin/dm.pl
+            chmod +x theos/bin/dm.pl
+          fi
 
       - name: Setup GNU Make
         run: echo "$(brew --prefix)/opt/make/libexec/gnubin" >> $GITHUB_PATH
