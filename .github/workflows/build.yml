@@ -22,7 +22,11 @@ jobs:
         if: steps.cache-theos.outputs.cache-hit != 'true'
         run: |
           rm -rf theos
-          git clone --depth 1 --branch master https://github.com/theos/theos.git theos
+          mkdir -p theos
+          git clone --depth 1 --branch master https://github.com/theos/theos.git temp-theos
+          mv temp-theos/* temp-theos/.* theos/ 2>/dev/null || true
+          rm -rf temp-theos
+          rm -rf theos/sdks
           git clone --depth 1 --branch master https://github.com/theos/sdks.git theos/sdks
 
       - name: Setup GNU Make
