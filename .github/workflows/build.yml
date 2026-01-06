@@ -11,18 +11,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4.2.2
 
-      - name: Get Theos and SDK versions for cache
-        id: cache-versions
-        run: |
-          echo "theos=$(git ls-remote https://github.com/theos/theos master | cut -f 1)" >> $GITHUB_OUTPUT
-          echo "sdk=$(git ls-remote https://github.com/theos/sdks master | cut -f 1)" >> $GITHUB_OUTPUT
-
       - name: Cache Theos
         id: cache-theos
         uses: actions/cache@v4
         with:
           path: theos
-          key: theos-${{ runner.os }}-${{ steps.cache-versions.outputs.theos }}-${{ steps.cache-versions.outputs.sdk }}
+          key: theos-${{ runner.os }}-${{ github.sha }}
 
       - name: Setup Theos
         if: steps.cache-theos.outputs.cache-hit != 'true'
