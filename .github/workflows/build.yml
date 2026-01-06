@@ -40,6 +40,21 @@ jobs:
       - name: Setup GNU Make
         run: echo "$(brew --prefix)/opt/make/libexec/gnubin" >> $GITHUB_PATH
 
+      - name: Verify dm.pl availability
+        run: |
+          # 确保dm.pl工具存在并可执行
+          if [ ! -f theos/bin/dm.pl ]; then
+            echo "dm.pl not found, downloading from theos/theos..."
+            mkdir -p theos/bin
+            curl -L https://raw.githubusercontent.com/theos/theos/master/bin/dm.pl -o theos/bin/dm.pl
+            chmod +x theos/bin/dm.pl
+          fi
+          echo "dm.pl is available at $(which dm.pl || echo 'not in PATH')"
+          echo "dm.pl in theos/bin: $(ls -la theos/bin/dm.pl 2>/dev/null)"
+
+      - name: Add Theos to PATH
+        run: echo "${{ github.workspace }}/theos/bin" >> $GITHUB_PATH
+
       - name: Build package
         env:
           THEOS: ${{ github.workspace }}/theos
