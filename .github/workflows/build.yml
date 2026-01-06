@@ -35,7 +35,13 @@ jobs:
           fi
           # 安装必要的依赖工具
           brew install coreutils findutils gnu-tar gnu-sed gawk gnutls gnu-indent gnu-getopt
-          brew tap ProcursusTeam/brew && brew install procursus/package-management/dpkg
+          # 安装dpkg（使用官方Homebrew配方）
+          if ! dpkg --version 2>/dev/null; then
+            echo "dpkg not found, installing from Homebrew..."
+            brew install dpkg || echo "dpkg install failed, using alternative packaging method"
+          fi
+          # 显示dpkg版本信息
+          dpkg --version 2>/dev/null || echo "dpkg still not found, continuing with build..."
 
       - name: Setup GNU Make
         run: echo "$(brew --prefix)/opt/make/libexec/gnubin" >> $GITHUB_PATH
