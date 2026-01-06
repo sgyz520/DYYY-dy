@@ -62,6 +62,8 @@ jobs:
         run: echo "${{ github.workspace }}/theos/bin" >> $GITHUB_PATH
 
       - name: Update Theos (fix vendor directories)
+        env:
+          THEOS: ${{ github.workspace }}/theos
         run: |
           # 运行update-theos来修复vendor/include和vendor/lib目录
           if [ -f theos/bin/update-theos ]; then
