@@ -18,23 +18,24 @@ jobs:
           path: theos
           key: theos-${{ runner.os }}-${{ github.sha }}
 
-      - name: Setup Procursus
-        run: |
-          brew tap ProcursusTeam/brew
-          brew install procursus/package-management/dpkg
-
       - name: Setup Theos
         if: steps.cache-theos.outputs.cache-hit != 'true'
         run: |
           rm -rf theos
-          git clone --depth 1 --branch master https://github.com/theos/theos.git theos
-          rm -rf theos/sdks
-          git clone --depth 1 --branch master https://github.com/theos/sdks.git theos/sdks
-          # 确保 dm.pl 存在
+          # 克隆完整的 Theos 仓库
+          git clone --depth 1 --branch master https://github.com/roothide/theos.git theos
+          # 克隆 SDKs
+          rm -rf theos/sdks && git clone --depth 1 --branch master https://github.com/theos/sdks.git theos/sdks
+          # 检查并下载 dm.pl 工具（如果缺失）
           if [ ! -f theos/bin/dm.pl ]; then
-            curl -L -o theos/bin/dm.pl https://raw.githubusercontent.com/ProcursusTeam/Procursus/master/core/theos/bin/dm.pl
+            echo "dm.pl not found, downloading from theos/theos..."
+            mkdir -p theos/bin
+            curl -L https://raw.githubusercontent.com/theos/theos/master/bin/dm.pl -o theos/bin/dm.pl
             chmod +x theos/bin/dm.pl
           fi
+          # 安装必要的依赖工具
+          brew install coreutils findutils gnu-tar gnu-sed gawk gnutls gnu-indent gnu-getopt
+          brew tap ProcursusTeam/brew && brew install procursus/package-management/dpkg
 
       - name: Setup GNU Make
         run: echo "$(brew --prefix)/opt/make/libexec/gnubin" >> $GITHUB_PATH
