@@ -14,7 +14,7 @@ jobs:
       - name: Get Theos and SDK versions for cache
         id: cache-versions
         run: |
-          THEOS_COMMIT=$(git ls-remote https://github.com/roothide/theos master | cut -f 1)
+          THEOS_COMMIT=$(git ls-remote https://github.com/theos/theos master | cut -f 1)
           SDK_COMMIT=$(git ls-remote https://github.com/theos/sdks master | cut -f 1)
           echo "theos=$THEOS_COMMIT" >> $GITHUB_OUTPUT
           echo "sdk=$SDK_COMMIT" >> $GITHUB_OUTPUT
@@ -30,7 +30,8 @@ jobs:
         if: steps.cache-theos.outputs.cache-hit != 'true'
         run: |
           rm -rf theos
-          git clone --depth 1 --branch master https://github.com/roothide/theos.git theos
+          git clone --depth 1 --branch master https://github.com/theos/theos.git theos
+          git clone --depth 1 --branch master https://github.com/theos/sdks.git theos/sdks
 
       - name: Setup GNU Make
         run: echo "$(brew --prefix)/opt/make/libexec/gnubin" >> $GITHUB_PATH
