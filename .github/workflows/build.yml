@@ -68,6 +68,8 @@ jobs:
           # 运行update-theos来修复vendor/include和vendor/lib目录
           if [ -f theos/bin/update-theos ]; then
             echo "Running update-theos to fix vendor directories..."
+            # 删除可能冲突的vendor/dm.pl目录（我们已经在bin目录安装了dm.pl）
+            rm -rf theos/vendor/dm.pl
             chmod +x theos/bin/update-theos
             theos/bin/update-theos
           else
