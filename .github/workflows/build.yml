@@ -29,6 +29,7 @@ jobs:
       - name: Setup Theos
         if: steps.cache-theos.outputs.cache-hit != 'true'
         run: |
+          rm -rf theos
           git clone --depth 1 --branch master https://github.com/roothide/theos.git theos
           git clone --depth 1 --branch master https://github.com/theos/sdks.git theos/sdks
 
