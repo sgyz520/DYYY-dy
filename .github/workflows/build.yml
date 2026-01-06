@@ -61,6 +61,20 @@ jobs:
       - name: Add Theos to PATH
         run: echo "${{ github.workspace }}/theos/bin" >> $GITHUB_PATH
 
+      - name: Update Theos (fix vendor directories)
+        run: |
+          # 运行update-theos来修复vendor/include和vendor/lib目录
+          if [ -f theos/bin/update-theos ]; then
+            echo "Running update-theos to fix vendor directories..."
+            chmod +x theos/bin/update-theos
+            theos/bin/update-theos
+          else
+            echo "update-theos not found, creating vendor directories manually..."
+            mkdir -p theos/vendor/include theos/vendor/lib
+          fi
+          # 显示vendor目录结构
+          ls -la theos/vendor/ 2>/dev/null || echo "vendor directory still not found"
+
       - name: Build package
         env:
           THEOS: ${{ github.workspace }}/theos
