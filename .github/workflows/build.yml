@@ -33,8 +33,8 @@ jobs:
             curl -L https://raw.githubusercontent.com/theos/theos/master/bin/dm.pl -o theos/bin/dm.pl
             chmod +x theos/bin/dm.pl
           fi
-          # 安装必要的依赖工具
-          brew install coreutils findutils gnu-tar gnu-sed gawk gnutls gnu-indent gnu-getopt
+          # 安装必要的依赖工具，包括ldid（用于iOS二进制签名）
+          brew install coreutils findutils gnu-tar gnu-sed gawk gnutls gnu-indent gnu-getopt ldid
           # 安装dpkg（使用官方Homebrew配方）
           if ! dpkg --version 2>/dev/null; then
             echo "dpkg not found, installing from Homebrew..."
@@ -46,7 +46,7 @@ jobs:
       - name: Setup GNU Make
         run: echo "$(brew --prefix)/opt/make/libexec/gnubin" >> $GITHUB_PATH
 
-      - name: Verify dm.pl availability
+      - name: Verify build tools availability
         run: |
           # 确保dm.pl工具存在并可执行
           if [ ! -f theos/bin/dm.pl ]; then
@@ -57,6 +57,14 @@ jobs:
           fi
           echo "dm.pl is available at $(which dm.pl || echo 'not in PATH')"
           echo "dm.pl in theos/bin: $(ls -la theos/bin/dm.pl 2>/dev/null)"
+          
+          # 验证ldid工具是否安装成功
+          if ! which ldid >/dev/null 2>&1; then
+            echo "ldid not found, installing from Homebrew..."
+            brew install ldid
+          fi
+          echo "ldid is available at $(which ldid || echo 'not in PATH')"
+          ldid --version 2>/dev/null || echo "ldid installed but version check failed"
 
       - name: Add Theos to PATH
         run: echo "${{ github.workspace }}/theos/bin" >> $GITHUB_PATH
